@@ -1,16 +1,19 @@
 const Block = require("./Block");
+const Transaction = require("./Transaction");
 
 class Blockchain {
   constructor() {
     this.chain = [this.createGensisBlock()];
     this.difficulty = 5;
+    this.pendingTransactions = [];
+    this.miningReward = 100;
   }
   /**
    * @description   Create First Block
    * @return        {Block}
    */
   createGensisBlock() {
-    return new Block(0, Date.now(), "Gensis block");
+    return new Block(Date.now(), "Gensis block", "0");
   }
   /**
    * @description   Get the latest block
@@ -44,6 +47,47 @@ class Blockchain {
       if (currentBlock.previousHash !== previousBlock.hash) return false;
     }
     return true;
+  }
+  /**
+   *
+   */
+  minePendingTransactions(miningRewardAddress) {
+    let block = new Block(Date.now(), this.pendingTransactions);
+    block.mineBlock(this.difficulty);
+    console.log("Block successfully mined!");
+    this.chain.push(block);
+
+    this.pendingTransactions = [
+      new Transaction(null, miningRewardAddress, this.miningReward),
+    ];
+  }
+  /**
+   * @description  Add transactions to array of pending transactions
+   * @param        {Transaction}
+   */
+  addTransaction(transaction) {
+    this.pendingTransactions.push(transaction);
+  }
+  /**
+   * @description Get you wallet balance via address
+   * @param       {} address
+   */
+  getBalanceViaAddress(address) {
+    let balance = 0;
+
+    for (const block of this.chain) {
+      for (const trans of block.transactions) {
+        if (trans.fromAddress === address) {
+          balance -= trans.amount;
+        }
+
+        if (trans.toAddress === address) {
+          balance += trans.amount;
+        }
+      }
+    }
+
+    return balance;
   }
 }
 
