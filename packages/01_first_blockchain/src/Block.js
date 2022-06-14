@@ -2,7 +2,6 @@ const SHA256 = require("crypto-js/sha256");
 
 class Block {
   /**
-   * @param {} index optionals / tell us where the block sits on
    * @param {number} timestamp tell us when block is created
    * @param {Object} transactions any type of transactions that we want to associate
    * @param {string} previousHash hash of block before
@@ -36,6 +35,15 @@ class Block {
       this.hash = this.calculateHash();
     }
     console.log("Block mined: " + this.hash);
+  }
+  /**
+   * @info Check if block have only valid transactions
+   */
+  hasValidTransactions() {
+    for (const tx of this.transactions) {
+      if (!tx.isValid()) return false;
+    }
+    return true;
   }
 }
 

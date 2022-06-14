@@ -9,7 +9,7 @@ class Blockchain {
     this.miningReward = 100;
   }
   /**
-   * @description   Create First Block
+   * @description   Create First/Genesis Block of Blockchain
    * @return        {Block}
    */
   createGensisBlock() {
@@ -24,14 +24,17 @@ class Blockchain {
     return this.chain[this.chain.length - 1];
   }
   /**
-   * @description   Add Block to chain
+   * @deprecated    Use
+   * @description   Simply mine and add block to chain
    * @param         {Block}
    * @return        {void}
    */
   addBlock(newBlock) {
+    // 1. Get previous Hash
     newBlock.previousHash = this.getLatestBlock().hash;
-    // newBlock.hash = newBlock.calculateHash();
+    // 2. Mine new block
     newBlock.mineBlock(this.difficulty);
+    // 3.  Add block to chain
     this.chain.push(newBlock);
   }
   /**
@@ -49,23 +52,40 @@ class Blockchain {
     return true;
   }
   /**
-   *
+   * @description Mine new block and add to chain. Add reward and clean pending transactions
    */
   minePendingTransactions(miningRewardAddress) {
-    let block = new Block(Date.now(), this.pendingTransactions);
+    // 1. Create new transaction with reward
+    this.pendingTransactions.push(
+      new Transaction(null, miningRewardAddress, this.miningReward)
+    );
+    // 2. Create new block and mine
+    let block = new Block(
+      Date.now(),
+      this.pendingTransactions,
+      this.getLatestBlock().hash
+    );
     block.mineBlock(this.difficulty);
     console.log("Block successfully mined!");
+    // 3. Add block to chain
     this.chain.push(block);
-
-    this.pendingTransactions = [
-      new Transaction(null, miningRewardAddress, this.miningReward),
-    ];
+    // 4. Clean pending transactions
+    this.pendingTransactions = [];
   }
   /**
    * @description  Add transactions to array of pending transactions
-   * @param        {Transaction}
+   * @param        {Transaction} transaction
    */
   addTransaction(transaction) {
+    // 1. Check addresses
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error("Transaction must include from and to address");
+    }
+    // 2. Check if transaction is valid
+    if (!transaction.isValid()) {
+      throw new Error("Cannot add invalid transaction");
+    }
+    // 3. if everything went well, add transaction to pending transactions
     this.pendingTransactions.push(transaction);
   }
   /**
