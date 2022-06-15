@@ -111,4 +111,4 @@ class Blockchain {
   }
 }
 
-module.exports = new Blockchain();
+module.exports = Blockchain;

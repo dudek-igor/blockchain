@@ -1,7 +1,7 @@
 {
-  "name": "01_blockchain",
+  "name": "blockchain",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple blockchain implementation",
   "main": "index.js",
   "dependencies": {
     "crypto-js": "^4.1.1",
@@ -18,7 +18,7 @@
     "blockchain"
   ],
   "author": "Igor Dudek",
-  "license": "MIT",
+  "license": "UNLICENSE",
   "bugs": {
     "url": "https://github.com/dudek-igor/first_blockchain/issues"
   },
